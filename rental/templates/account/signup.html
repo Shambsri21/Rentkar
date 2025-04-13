@@ -1,0 +1,113 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Sign Up" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">{% trans "Sign Up" %}</h1>
+                    
+                    {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        {{ form.email|as_crispy_field }}
+                        {{ form.password1|as_crispy_field }}
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                {{ form.phone_number|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.role|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        {{ form.address|as_crispy_field }}
+                        
+                        <!-- Dynamic field that changes based on role -->
+                        <div id="dynamic_field">
+                            <div id="license_content">
+                                {{ form.license_id|as_crispy_field }}
+                            </div>
+                            <div id="branch_content" style="display: none;">
+                                {{ form.branch_name|as_crispy_field }}
+                                {{ form.branch_location|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button class="btn btn-primary" type="submit">{% trans "Sign Up" %}</button>
+                        </div>
+                    </form>
+                    
+                    <p class="text-center mt-4">
+                        {% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.querySelector('select[name="role"]');
+    const licenseContent = document.getElementById('license_content');
+    const branchContent = document.getElementById('branch_content');
+
+    function toggleFields() {
+        const selectedRole = roleSelect.value;
+        
+        if (selectedRole === 'customer') {
+            licenseContent.style.display = 'block';
+            branchContent.style.display = 'none';
+        } else if (selectedRole === 'manager') {
+            licenseContent.style.display = 'none';
+            branchContent.style.display = 'block';
+        }
+    }
+
+    // Set initial state
+    toggleFields();
+
+    // Add change event listener
+    roleSelect.addEventListener('change', toggleFields);
+});
+</script>
+{% endblock %} 

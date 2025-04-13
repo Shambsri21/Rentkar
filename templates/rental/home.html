@@ -1,0 +1,895 @@
+{% extends 'rental/base.html' %}
+{% load static %}
+
+{% block title %}RENTKAR - Sustainable Vehicle Rental for a Greener Future{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #1a237e, #0d47a1);
+        --accent-gradient: linear-gradient(135deg, #00c853, #64dd17);
+        --text-light: #ffffff;
+        --text-dark: #1e293b;
+        --background-light: #f8fafc;
+        --eco-green: #00c853;
+    }
+
+    .hero-section {
+        background: var(--primary-gradient);
+        color: var(--text-light);
+        padding: 6rem 0;
+        border-radius: 0 0 3rem 3rem;
+        margin-bottom: 4rem;
+        position: relative;
+        overflow: hidden;
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z' fill='%23ffffff' fill-opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2rem;
+        backdrop-filter: blur(10px);
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        animation: slideDown 1s ease-out;
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        animation: fadeInUp 1s ease-out;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        opacity: 0;
+        max-width: 700px;
+        margin: 0 auto 3rem;
+        line-height: 1.6;
+        animation: fadeInUp 1s ease-out 0.5s forwards;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 1s forwards;
+    }
+
+    .btn-hero {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-radius: 2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary-hero {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+    }
+
+    .btn-primary-hero:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+        color: white;
+    }
+
+    .btn-secondary-hero {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary-hero:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .scroll-indicator {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        color: white;
+        cursor: pointer;
+        animation: bounce 2s infinite;
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 1.5s forwards, bounce 2s infinite 1.5s;
+    }
+
+    .scroll-indicator i {
+        font-size: 2rem;
+        opacity: 0.8;
+    }
+
+    .scroll-text {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .features-section {
+        padding: 6rem 0;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+    }
+
+    .section-header.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: #64748b;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+    }
+
+    .feature-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--accent-gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        color: #1a237e;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.2) rotate(10deg);
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+    }
+
+    .feature-description {
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+        40% { transform: translateX(-50%) translateY(-20px); }
+        60% { transform: translateX(-50%) translateY(-10px); }
+    }
+
+    /* EV Section Styles */
+    .ev-section {
+        background: linear-gradient(135deg, #004d40, #00695c);
+        color: var(--text-light);
+        padding: 6rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ev-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+    .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .eco-counter {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 1rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .counter-value {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--eco-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .counter-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .ev-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        padding: 2rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ev-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+    }
+
+    .ev-card:hover::before {
+        transform: translateX(100%);
+    }
+
+    .ev-card:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .ev-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--eco-green);
+    }
+
+    .ev-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .ev-description {
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    /* Carbon Calculator Styles */
+    .calculator-section {
+        background: var(--background-light);
+        padding: 6rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .calculator-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z' fill='%2300c853' fill-opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+
+    .calculator-card {
+        background: white;
+        border-radius: 2rem;
+        padding: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        max-width: 800px;
+        margin: 0 auto;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.6s ease;
+    }
+
+    .calculator-card.visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .calculator-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: var(--accent-gradient);
+    }
+
+    .calculator-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .calculator-subtitle {
+        font-size: 1.2rem;
+        color: #64748b;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .calculator-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--eco-green);
+        box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1);
+        outline: none;
+    }
+
+    .calculator-button {
+        grid-column: 1 / -1;
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .calculator-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+    }
+
+    .result-card {
+        background: var(--accent-gradient);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 1.5rem;
+        margin-top: 2rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+        text-align: center;
+    }
+
+    .result-card.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .result-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .result-value {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .result-description {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+
+    .result-equivalent {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 1rem;
+        opacity: 0.8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge">Welcome to RENTKAR</div>
+            <h1 class="hero-title">Your Journey Begins Here</h1>
+            <p class="hero-subtitle">Experience the freedom of hassle-free vehicle rentals with our premium selection and exceptional service.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'vehicle_list' %}" class="btn-hero btn-primary-hero">
+                    <i class="bi bi-car-front"></i>
+                    Explore Vehicles
+                </a>
+                <a href="#features" class="btn-hero btn-secondary-hero">
+                    <i class="bi bi-info-circle"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-indicator" id="scroll-to-features">
+        <i class="bi bi-mouse"></i>
+        <div class="scroll-text">Scroll to explore</div>
+    </div>
+</section>
+
+<section class="features-section" id="features">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Why Choose RENTKAR?</h2>
+            <p class="section-subtitle">Discover the advantages of renting with us</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h3 class="feature-title">Safe & Secure</h3>
+                    <p class="feature-description">All our vehicles undergo rigorous safety checks and sanitization procedures.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h3 class="feature-title">24/7 Support</h3>
+                    <p class="feature-description">Our dedicated team is always ready to assist you whenever you need help.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <h3 class="feature-title">Quick Booking</h3>
+                    <p class="feature-description">Easy and fast booking process to get you on the road in minutes.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <h3 class="feature-title">Best Rates</h3>
+                    <p class="feature-description">Competitive pricing with no hidden fees or surprise charges.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EV Section -->
+<section class="ev-section" id="ev-section">
+    <div class="ev-particles" id="particles"></div>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="eco-counter">
+                    <div class="counter-value" id="co2-counter">0</div>
+                    <div class="counter-label">kg of CO2 saved by our EV renters this month</div>
+                </div>
+                <h2 class="section-title mb-4">Drive the Future with Our EV Fleet</h2>
+                <p class="section-subtitle mb-5">Join the sustainable transportation revolution. Our electric vehicles offer zero-emission rides with cutting-edge technology and impressive range.</p>
+                <a href="{% url 'vehicle_list' %}?fuel_type=EV" class="btn-hero btn-primary-hero">
+                    <i class="bi bi-lightning-charge"></i>
+                    Explore EV Collection
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="ev-card" data-value="300">
+                            <div class="ev-icon">
+                                <i class="bi bi-battery-charging"></i>
+                            </div>
+                            <h3 class="ev-title">Fast Charging</h3>
+                            <p class="ev-description">0-80% in just 30 minutes with our rapid charging stations</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ev-card" data-value="400">
+                            <div class="ev-icon">
+                                <i class="bi bi-globe"></i>
+                            </div>
+                            <h3 class="ev-title">Zero Emissions</h3>
+                            <p class="ev-description">100% electric fleet for a cleaner, greener environment</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ev-card" data-value="350">
+                            <div class="ev-icon">
+                                <i class="bi bi-map"></i>
+                            </div>
+                            <h3 class="ev-title">Long Range</h3>
+                            <p class="ev-description">Up to 400km range on a single charge</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ev-card" data-value="250">
+                            <div class="ev-icon">
+                                <i class="bi bi-piggy-bank"></i>
+                            </div>
+                            <h3 class="ev-title">Cost Effective</h3>
+                            <p class="ev-description">Save up to 70% on fuel costs compared to traditional vehicles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Carbon Calculator Section -->
+<section class="calculator-section" id="calculator">
+    <div class="container">
+        <div class="calculator-card">
+            <h2 class="calculator-title">Calculate Your Environmental Impact</h2>
+            <p class="calculator-subtitle">See how much CO2 you can save by switching to an electric vehicle</p>
+            <form class="calculator-form" id="carbon-calculator">
+                <div class="form-group">
+                    <label for="distance">Average daily commute (km)</label>
+                    <input type="number" class="form-control" id="distance" required min="1" max="500">
+                </div>
+                <div class="form-group">
+                    <label for="current-vehicle">Current vehicle type</label>
+                    <select class="form-control" id="current-vehicle" required>
+                        <option value="petrol">Petrol Car</option>
+                        <option value="diesel">Diesel Car</option>
+                        <option value="hybrid">Hybrid Car</option>
+                    </select>
+                </div>
+                <button type="submit" class="calculator-button">
+                    <i class="bi bi-calculator"></i>
+                    Calculate Impact
+                </button>
+            </form>
+            <div class="result-card" id="calculator-result">
+                <h3 class="result-title">Your Potential Impact</h3>
+                <div class="result-value" id="savings-counter">0</div>
+                <p class="result-description">kg of CO2 saved per year by switching to an EV</p>
+                <div class="result-equivalent">
+                    That's equivalent to planting <span id="trees">0</span> trees!
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Vehicle Collection Section -->
+<section class="vehicle-collection py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8">
+                <h2 class="display-4 mb-3">Our Fleet</h2>
+                <p class="lead text-muted">Explore our diverse range of vehicles for all your transportation needs.</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'vehicle_list' %}" class="btn btn-primary btn-lg">
+                    View All Vehicles
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Featured Vehicles -->
+        <div class="row">
+            {% if featured_vehicles %}
+                {% for vehicle in featured_vehicles %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if vehicle.image %}
+                        <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.name }}">
+                        {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-car fa-3x text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vehicle.name }}</h5>
+                            <p class="card-text">{{ vehicle.description|truncatewords:20 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-primary fw-bold">₹{{ vehicle.daily_rate }}/day</span>
+                                {% if vehicle.is_available %}
+                                    {% if user.is_authenticated and user.role == 'customer' %}
+                                        <a href="{% url 'book_vehicle' vehicle.vehicle_id %}" class="btn btn-sm btn-success">Book Now</a>
+                                    {% else %}
+                                        <a href="{% url 'vehicle_detail' vehicle.vehicle_id %}" class="btn btn-sm btn-primary">View Details</a>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-danger">Not Available</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No vehicles available at the moment.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Smooth scroll to features section
+        $('#scroll-to-features, .btn-secondary-hero').click(function(e) {
+            e.preventDefault();
+            $('html, body').animate({
+                scrollTop: $('#features').offset().top - 80
+            }, 1000);
+        });
+
+        // Animate elements on scroll
+        function checkVisibility() {
+            $('.section-header, .feature-card').each(function() {
+                var elementTop = $(this).offset().top;
+                var viewportTop = $(window).scrollTop();
+                var viewportBottom = viewportTop + $(window).height();
+                
+                if (elementTop < viewportBottom - 100) {
+                    $(this).addClass('visible');
+                }
+            });
+        }
+
+        // Check visibility on load and scroll
+        checkVisibility();
+        $(window).scroll(checkVisibility);
+
+        // Hide scroll indicator when scrolling starts
+        var scrollIndicator = $('.scroll-indicator');
+        var lastScrollTop = 0;
+        
+        $(window).scroll(function() {
+            var st = $(this).scrollTop();
+            if (st > lastScrollTop) {
+                scrollIndicator.fadeOut();
+            } else if (st === 0) {
+                scrollIndicator.fadeIn();
+            }
+            lastScrollTop = st;
+        });
+
+        // Particle animation
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                particle.style.animationDelay = (Math.random() * 2) + 's';
+                particles.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // CO2 Counter Animation
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                element.textContent = Math.floor(start).toLocaleString();
+                if (start >= target) {
+                    element.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                }
+            }, 16);
+        }
+
+        // Animate CO2 counter when in view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(document.getElementById('co2-counter'), 5000);
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        observer.observe(document.getElementById('co2-counter'));
+
+        // Interactive EV Cards
+        $('.ev-card').hover(function() {
+            const value = $(this).data('value');
+            animateCounter(document.getElementById('co2-counter'), value, 500);
+        });
+
+        // Add floating animation to EV cards
+        $('.ev-card').each(function(index) {
+            $(this).css({
+                'animation': `float ${3 + index * 0.5}s ease-in-out infinite`,
+                'animation-delay': `${index * 0.2}s`
+            });
+        });
+
+        // Carbon Calculator
+        $('#carbon-calculator').submit(function(e) {
+            e.preventDefault();
+            const distance = $('#distance').val();
+            const vehicleType = $('#current-vehicle').val();
+
+            // Calculate CO2 savings (simplified calculation)
+            let currentEmissions;
+            switch(vehicleType) {
+                case 'petrol':
+                    currentEmissions = distance * 0.2; // 200g CO2/km
+                    break;
+                case 'diesel':
+                    currentEmissions = distance * 0.18; // 180g CO2/km
+                    break;
+                case 'hybrid':
+                    currentEmissions = distance * 0.1; // 100g CO2/km
+                    break;
+            }
+
+            const yearlyEmissions = Math.round(currentEmissions * 365);
+            const treesEquivalent = Math.round(yearlyEmissions / 22); // Average tree absorbs 22kg CO2/year
+
+            const result = $('#calculator-result');
+            result.addClass('show');
+            
+            // Animate the counter
+            animateCounter(document.getElementById('savings-counter'), yearlyEmissions);
+            
+            // Update trees equivalent
+            $('#trees').text(treesEquivalent);
+        });
+
+        // Animate calculator card when in view
+        const calculatorObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    calculatorObserver.unobserve(entry.target);
+                }
+            });
+        });
+        calculatorObserver.observe(document.querySelector('.calculator-card'));
+    });
+</script>
+{% endblock %} 

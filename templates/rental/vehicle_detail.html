@@ -1,0 +1,251 @@
+{% extends 'rental/base.html' %}
+{% load static %}
+
+{% block title %}{{ vehicle.name }} {{ vehicle.model }} - Details{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --secondary-color: #64748b;
+        --background-light: #f8fafc;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+    }
+
+    .detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .vehicle-image {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        position: relative;
+        padding-top: 75%; /* 4:3 aspect ratio */
+        background-color: var(--background-light);
+    }
+
+    .vehicle-image img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Changed from cover to contain */
+        padding: 1rem; /* Add some padding around the image */
+    }
+
+    .vehicle-info {
+        padding: 2rem;
+    }
+
+    .vehicle-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .vehicle-description {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .info-card {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        background: white;
+    }
+
+    .info-card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text-primary);
+    }
+
+    .info-item i {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+    }
+
+    .info-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .price-display {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: baseline;
+        gap: 0.25rem;
+    }
+
+    .price-display .currency {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .price-display .period {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        font-weight: normal;
+    }
+
+    .btn-book {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--primary-color);
+        color: white;
+        transition: all 0.2s ease;
+    }
+
+    .btn-book:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+    }
+
+    .status-message {
+        padding: 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .status-message.info {
+        background: var(--background-light);
+        color: var(--text-secondary);
+    }
+
+    .status-message.warning {
+        background: #fff7ed;
+        color: #9a3412;
+        border-color: #fed7aa;
+    }
+
+    .status-message a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .status-message a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="vehicle-image">
+                {% if vehicle.image %}
+                <img src="{{ vehicle.image.url }}" alt="{{ vehicle.name }}">
+                {% else %}
+                <img src="{% static 'images/default-vehicle.jpg' %}" alt="{{ vehicle.name }}">
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="vehicle-info">
+                <h1 class="vehicle-title">{{ vehicle.name }} {{ vehicle.model }}</h1>
+                <p class="vehicle-description">{{ vehicle.description|default:"Experience the perfect blend of style, comfort, and performance with our meticulously maintained vehicle." }}</p>
+                
+                <div class="info-card">
+                    <h5 class="info-card-title">Vehicle Details</h5>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <i class="bi bi-car-front"></i>
+                            <div>
+                                <div class="info-label">Type</div>
+                                <div class="info-value">{{ vehicle.get_vehicle_type_display }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi {% if vehicle.fuel_type == 'EV' %}bi-lightning-charge{% else %}bi-fuel-pump{% endif %}"></i>
+                            <div>
+                                <div class="info-label">Fuel</div>
+                                <div class="info-value">{{ vehicle.get_fuel_type_display }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-upc-scan"></i>
+                            <div>
+                                <div class="info-label">Registration</div>
+                                <div class="info-value">{{ vehicle.registration_number }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-shop"></i>
+                            <div>
+                                <div class="info-label">Branch</div>
+                                <div class="info-value">{{ vehicle.branch.branch_name }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="price-display">
+                    <span class="currency">₹</span>
+                    {{ vehicle.daily_rate }}
+                    <span class="period">/day</span>
+                </div>
+
+                {% if vehicle.is_available %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'book_vehicle' vehicle.vehicle_id %}" class="btn btn-book">
+                            Book Now
+                        </a>
+                    {% else %}
+                        <div class="status-message info">
+                            Please <a href="{% url 'account_login' %}">login</a> to book this vehicle.
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="status-message warning">
+                        This vehicle is currently not available for booking.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

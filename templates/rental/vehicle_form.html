@@ -1,0 +1,77 @@
+{% extends "rental/manager_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+{% if vehicle %}Edit Vehicle{% else %}Add New Vehicle{% endif %}
+{% endblock %}
+
+{% block manager_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.model|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.vehicle_type|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.fuel_type|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.registration_number|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.daily_rate|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    {{ form.description|as_crispy_field }}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.is_available|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.image|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    {% if vehicle.image %}
+                    <div class="mb-3">
+                        <label class="form-label">Current Image</label>
+                        <div>
+                            <img src="{{ vehicle.image.url }}" alt="{{ vehicle.name }}" class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'manage_vehicles' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            {% if vehicle %}Update Vehicle{% else %}Add Vehicle{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

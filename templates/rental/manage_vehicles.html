@@ -1,0 +1,101 @@
+{% extends "rental/manager_base.html" %}
+
+{% block page_title %}Manage Vehicles{% endblock %}
+
+{% block manager_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Vehicle List</h5>
+        <a href="{% url 'add_vehicle' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Vehicle
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Vehicle Name</th>
+                        <th>Model</th>
+                        <th>Type</th>
+                        <th>Fuel Type</th>
+                        <th>Registration Number</th>
+                        <th>Daily Rate</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                    <tr>
+                        <td>{{ vehicle.name }}</td>
+                        <td>{{ vehicle.model }}</td>
+                        <td>
+                            {% if vehicle.vehicle_type == '2W' %}
+                            <span class="badge bg-info">Two Wheeler</span>
+                            {% else %}
+                            <span class="badge bg-primary">Four Wheeler</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if vehicle.fuel_type == 'EV' %}
+                            <span class="badge bg-success">Electric</span>
+                            {% elif vehicle.fuel_type == 'PETROL' %}
+                            <span class="badge bg-warning">Petrol</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Diesel</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ vehicle.registration_number }}</td>
+                        <td>₹{{ vehicle.daily_rate }}</td>
+                        <td>
+                            {% if vehicle.is_available %}
+                            <span class="badge bg-success">Available</span>
+                            {% else %}
+                            <span class="badge bg-danger">Rented</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'edit_vehicle' vehicle.vehicle_id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ vehicle.vehicle_id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal{{ vehicle.vehicle_id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirm Delete</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete {{ vehicle.name }}?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <form action="{% url 'delete_vehicle' vehicle.vehicle_id %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">No vehicles found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

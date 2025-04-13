@@ -1,0 +1,377 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary-color: #64748b;
+        --accent-color: #3b82f6;
+        --background-color: #f8fafc;
+        --card-background: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --success-color: #22c55e;
+        --error-color: #ef4444;
+    }
+
+    body {
+        background: var(--background-color);
+        color: var(--text-primary);
+    }
+
+    .login-container {
+        max-width: 440px;
+        margin: 3rem auto;
+        animation: fadeIn 0.8s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        background: var(--card-background);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: 2rem 1.5rem;
+        border: none;
+    }
+
+    .card-header h3 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    .role-selector {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin: -1.5rem auto 2rem;
+        position: relative;
+        z-index: 1;
+        padding: 0 1rem;
+    }
+
+    .role-btn {
+        flex: 1;
+        padding: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--card-background);
+        max-width: 150px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .role-btn.active {
+        border-color: var(--primary-color);
+        background: var(--primary-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .role-btn:hover:not(.active) {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    }
+
+    .role-btn i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--border-color);
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-signin {
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        border: none;
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+    }
+
+    .btn-signin:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .social-login {
+        margin: 2rem 0;
+        position: relative;
+        text-align: center;
+    }
+
+    .social-login:before,
+    .social-login:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 45%;
+        height: 1px;
+        background: var(--border-color);
+    }
+
+    .social-login:before { left: 0; }
+    .social-login:after { right: 0; }
+
+    .social-login span {
+        background: var(--card-background);
+        padding: 0 1rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .google-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        background: var(--card-background);
+        border: 2px solid var(--border-color);
+        padding: 0.875rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 500;
+        margin-top: 1rem;
+    }
+
+    .google-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .links-section {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .links-section a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .links-section a:hover {
+        color: var(--primary-dark);
+        text-decoration: none;
+    }
+
+    .spinner-border {
+        width: 1.2rem;
+        height: 1.2rem;
+        border-width: 0.15em;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .login-form {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @media (max-width: 576px) {
+        .login-container {
+            margin: 1rem auto;
+            padding: 0 1rem;
+        }
+
+        .card-header {
+            padding: 1.5rem 1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem 1rem;
+        }
+
+        .role-selector {
+            gap: 1rem;
+        }
+
+        .role-btn {
+            padding: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="login-container">
+        <div class="card">
+            <div class="card-header text-center">
+                <h3 class="mb-0">{% trans "Welcome Back" %}</h3>
+            </div>
+            <div class="card-body p-4">
+                <!-- Role Selector -->
+                <div class="role-selector">
+                    <div class="role-btn active" data-form="user-form">
+                        <i class="fas fa-user"></i>
+                        <span>User</span>
+                    </div>
+                    <div class="role-btn" data-form="manager-form">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Manager</span>
+                    </div>
+                </div>
+
+                <!-- User Login Form -->
+                <div id="user-form" class="login-form active">
+                    <form class="login" method="POST" action="{% url 'account_login' %}">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                                <label class="form-check-label" for="remember">
+                                    {% trans "Remember Me" %}
+                                </label>
+                            </div>
+                            <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">{% trans "Sign In" %}</button>
+                    </form>
+
+                    <div class="social-login text-center">
+                        <span class="px-3 bg-white">or</span>
+                    </div>
+
+                    <a href="{% provider_login_url 'google' %}" class="google-btn">
+                        <img src="https://img.icons8.com/color/24/000000/google-logo.png">
+                        Sign in with Google
+                    </a>
+                </div>
+
+                <!-- Manager Login Form -->
+                <div id="manager-form" class="login-form">
+                    <form class="login" method="POST" action="{% url 'manager_login' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="manager_email" class="form-label">Manager Email</label>
+                            <input type="email" name="email" class="form-control" id="manager_email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="manager_password" class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" id="manager_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Sign In as Manager</button>
+                    </form>
+                </div>
+
+                <div class="links-section">
+                    <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                    <a href="{{ signup_url }}">{% trans "Create Account" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleBtns = document.querySelectorAll('.role-btn');
+    const userForm = document.getElementById('user-form');
+    const managerForm = document.getElementById('manager-form');
+
+    roleBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Update button states
+            roleBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show/hide appropriate form
+            if (this.dataset.form === 'user-form') {
+                userForm.classList.add('active');
+                managerForm.classList.remove('active');
+            } else {
+                userForm.classList.remove('active');
+                managerForm.classList.add('active');
+            }
+        });
+    });
+
+    // Add loading state to submit buttons
+    document.querySelectorAll('form.login').forEach(form => {
+        form.addEventListener('submit', function() {
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing in...';
+            btn.disabled = true;
+
+            // Reset button after 5 seconds if form hasn't redirected
+            setTimeout(() => {
+                if (!btn.disabled) return;
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 5000);
+        });
+    });
+});
+</script>
+{% endblock %} 

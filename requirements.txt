@@ -1,0 +1,6 @@
+django==4.2.7
+mysqlclient==2.2.0
+python-dotenv==1.0.0
+django-allauth==0.57.0
+django-crispy-forms==2.1
+crispy-bootstrap5==2023.10 

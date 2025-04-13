@@ -1,0 +1,76 @@
+{% extends 'rental/base.html' %}
+
+{% block title %}Manager Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Vehicles</h5>
+                <h2 class="card-text">{{ total_vehicles }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Available Vehicles</h5>
+                <h2 class="card-text">{{ available_vehicles }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Total Bookings</h5>
+                <h2 class="card-text">{{ total_bookings }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'manager_vehicle_list' %}" class="btn btn-primary">
+                        <i class="bi bi-car-front"></i> Manage Vehicles
+                    </a>
+                    <a href="{% url 'manager_bookings' %}" class="btn btn-success">
+                        <i class="bi bi-calendar-check"></i> View Bookings
+                    </a>
+                    <a href="{% url 'add_vehicle' %}" class="btn btn-info">
+                        <i class="bi bi-plus-circle"></i> Add New Vehicle
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Recent Bookings</h5>
+                <div class="list-group">
+                    {% for booking in recent_bookings %}
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ booking.vehicle.name }}</h6>
+                            <small class="text-{{ booking.status|lower }}">{{ booking.status }}</small>
+                        </div>
+                        <p class="mb-1">Booked by: {{ booking.user.username }}</p>
+                        <small>From: {{ booking.start_date|date:"M d, Y" }} To: {{ booking.end_date|date:"M d, Y" }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="alert alert-info">
+                        No recent bookings.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,72 @@
+{% extends 'rental/base.html' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Bookings</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Vehicle</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Total Cost</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.booking_id }}</td>
+                <td>
+                    <a href="{% url 'vehicle_detail' booking.vehicle.vehicle_id %}">
+                        {{ booking.vehicle.name }} {{ booking.vehicle.model }}
+                    </a>
+                </td>
+                <td>{{ booking.start_date|date:"M d, Y" }}</td>
+                <td>{{ booking.end_date|date:"M d, Y" }}</td>
+                <td>${{ booking.total_cost }}</td>
+                <td>
+                    <span class="badge bg-{{ booking.status|lower }}">
+                        {{ booking.status }}
+                    </span>
+                </td>
+                <td>
+                    {% if booking.payment_status == 'PAID' %}
+                        <span class="badge bg-success">{{ booking.payment_method }}</span>
+                        <small class="text-muted d-block">TXN: {{ booking.transaction_id }}</small>
+                        <small class="text-muted d-block">Card: ****{{ booking.card_last_four }}</small>
+                    {% else %}
+                        <span class="badge bg-warning">{{ booking.payment_status }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if booking.status == 'PENDING' %}
+                    <form method="post" action="{% url 'cancel_booking' booking.booking_id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                            Cancel
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">
+                    <div class="alert alert-info">
+                        You have no bookings yet.
+                        <a href="{% url 'vehicle_list' %}" class="alert-link">Browse vehicles</a> to make a booking.
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

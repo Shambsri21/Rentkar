@@ -1,0 +1,53 @@
+{% extends 'rental/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>My Bookings</h2>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if bookings %}
+    <div class="row">
+        {% for booking in bookings %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ booking.vehicle.brand }} {{ booking.vehicle.model }}</h5>
+                    <p class="card-text">
+                        <strong>Booking Period:</strong><br>
+                        From: {{ booking.start_date }}<br>
+                        To: {{ booking.end_date }}<br>
+                        <strong>Total Cost:</strong> ₹{{ booking.total_cost }}<br>
+                        <strong>Status:</strong> {{ booking.status|title }}<br>
+                        <strong>Payment Status:</strong> {{ booking.payment_status|title }}
+                    </p>
+                    {% if booking.status != 'cancelled' and booking.payment_status != 'paid' %}
+                    <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                            Cancel Booking
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% if booking.payment_status == 'pending' %}
+                    <a href="#" class="btn btn-primary">Complete Payment</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You don't have any bookings yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,163 @@
+{% extends 'rental/base.html' %}
+{% load static %}
+
+{% block title %}Available Vehicles{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .vehicle-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .vehicle-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .vehicle-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .vehicle-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .vehicle-info {
+        margin-bottom: 1rem;
+    }
+
+    .vehicle-info i {
+        width: 20px;
+        color: #6c757d;
+        margin-right: 8px;
+    }
+
+    .price-tag {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2563eb;
+    }
+
+    .btn-view-details {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+
+    .no-vehicles {
+        text-align: center;
+        padding: 3rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .filter-section {
+            margin-bottom: 20px;
+        }
+        
+        .vehicle-card {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Available Vehicles</h1>
+    
+    <div class="row">
+        <!-- Filter Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Filter Vehicles</h5>
+                    <form method="get" class="mt-3">
+                        <div class="mb-3">
+                            <label for="{{ filter_form.vehicle_type.id_for_label }}" class="form-label">Vehicle Type</label>
+                            {{ filter_form.vehicle_type }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ filter_form.fuel_type.id_for_label }}" class="form-label">Fuel Type</label>
+                            {{ filter_form.fuel_type }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ filter_form.price_range.id_for_label }}" class="form-label">Price Range</label>
+                            {{ filter_form.price_range }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ filter_form.sort_by.id_for_label }}" class="form-label">Sort By</label>
+                            {{ filter_form.sort_by }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        {% if request.GET %}
+                            <a href="{% url 'vehicle_list' %}" class="btn btn-outline-secondary w-100 mt-2">Clear Filters</a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vehicle Grid -->
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for vehicle in vehicles %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if vehicle.image %}
+                            <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.name }}">
+                        {% else %}
+                            <img src="{% static 'images/default-vehicle.jpg' %}" class="card-img-top" alt="Default vehicle image">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vehicle.name }} {{ vehicle.model }}</h5>
+                            <p class="card-text">
+                                <strong>Type:</strong> {{ vehicle.get_vehicle_type_display }}<br>
+                                <strong>Fuel:</strong> {{ vehicle.get_fuel_type_display }}<br>
+                                <strong>Rate:</strong> ₹{{ vehicle.daily_rate }}/day<br>
+                                <strong>Status:</strong> 
+                                {% if vehicle.is_available %}
+                                    <span class="badge bg-success">Available</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Not Available</span>
+                                {% endif %}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'vehicle_detail' vehicle.vehicle_id %}" class="btn btn-primary">View Details</a>
+                                {% if vehicle.is_available and user.is_authenticated and user.role == 'customer' %}
+                                    <a href="{% url 'book_vehicle' vehicle.vehicle_id %}" class="btn btn-success">Book Now</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No vehicles found matching your criteria.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

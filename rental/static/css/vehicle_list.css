@@ -1,0 +1,39 @@
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.filter-sidebar .card {
+    position: sticky;
+    top: 20px;
+}
+
+.price-tag {
+    font-weight: bold;
+    color: #28a745;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.btn-view-details {
+    width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-sidebar {
+        margin-bottom: 2rem;
+    }
+    
+    .filter-sidebar .card {
+        position: static;
+    }
+} 

@@ -1,0 +1,92 @@
+{% extends "account/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .manager-sidebar {
+        min-height: 100vh;
+        background: #2c3e50;
+        color: white;
+        padding-top: 2rem;
+    }
+
+    .manager-sidebar .nav-link {
+        color: rgba(255,255,255,0.8);
+        padding: 0.8rem 1rem;
+        margin: 0.2rem 0;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .manager-sidebar .nav-link:hover,
+    .manager-sidebar .nav-link.active {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .manager-sidebar .nav-link i {
+        width: 24px;
+        text-align: center;
+        margin-right: 0.5rem;
+    }
+
+    .manager-content {
+        padding: 2rem;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    .manager-header {
+        background: white;
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 manager-sidebar">
+            <h4 class="text-center mb-4">Manager Panel</h4>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="{% url 'home' %}">
+                    <i class="fas fa-home"></i> View Website
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}" 
+                   href="{% url 'manager_dashboard' %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a class="nav-link {% if 'vehicles' in request.path %}active{% endif %}" 
+                   href="{% url 'manage_vehicles' %}">
+                    <i class="fas fa-car"></i> Vehicles
+                </a>
+                <a class="nav-link {% if 'bookings' in request.path %}active{% endif %}" 
+                   href="{% url 'manage_bookings' %}">
+                    <i class="fas fa-calendar-alt"></i> Bookings
+                </a>
+                <a class="nav-link {% if 'users' in request.path %}active{% endif %}" 
+                   href="{% url 'manage_users' %}">
+                    <i class="fas fa-users"></i> Users
+                </a>
+                <a class="nav-link" href="{% url 'profile' %}">
+                    <i class="fas fa-user-cog"></i> My Profile
+                </a>
+                <a class="nav-link" href="{% url 'account_logout' %}">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 manager-content">
+            <div class="manager-header">
+                <h2>{% block page_title %}{% endblock %}</h2>
+            </div>
+            {% block manager_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

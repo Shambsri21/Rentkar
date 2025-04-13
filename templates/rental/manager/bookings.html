@@ -1,0 +1,91 @@
+{% extends 'rental/base.html' %}
+
+{% block title %}Manage Bookings{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Manage Bookings</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Vehicle</th>
+                <th>Customer</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Total Cost</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.booking_id }}</td>
+                <td>{{ booking.vehicle.name }} {{ booking.vehicle.model }}</td>
+                <td>{{ booking.user.username }}</td>
+                <td>{{ booking.start_date|date:"M d, Y" }}</td>
+                <td>{{ booking.end_date|date:"M d, Y" }}</td>
+                <td>${{ booking.total_cost }}</td>
+                <td>
+                    <span class="badge bg-{{ booking.status|lower }}">
+                        {{ booking.status }}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                            Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#statusModal{{ booking.booking_id }}">
+                                    Change Status
+                                </a>
+                            </li>
+                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Status Change Modal -->
+            <div class="modal fade" id="statusModal{{ booking.booking_id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Change Booking Status</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="{% url 'update_booking_status' booking.booking_id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">New Status</label>
+                                    <select class="form-select" name="status" id="status">
+                                        <option value="PENDING" {% if booking.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                        <option value="CONFIRMED" {% if booking.status == 'CONFIRMED' %}selected{% endif %}>Confirmed</option>
+                                        <option value="CANCELLED" {% if booking.status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                                        <option value="COMPLETED" {% if booking.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Status</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">
+                    <div class="alert alert-info">
+                        No bookings found.
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

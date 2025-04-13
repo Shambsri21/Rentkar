@@ -1,0 +1,111 @@
+{% extends "rental/manager_base.html" %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block manager_content %}
+<div class="row">
+    <!-- Statistics Cards -->
+    <div class="col-md-3 mb-4">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Total Vehicles</h6>
+                        <h2 class="mb-0">{{ total_vehicles }}</h2>
+                    </div>
+                    <i class="fas fa-car fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Active Rentals</h6>
+                        <h2 class="mb-0">{{ active_rentals }}</h2>
+                    </div>
+                    <i class="fas fa-key fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-warning text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Pending Requests</h6>
+                        <h2 class="mb-0">{{ pending_requests }}</h2>
+                    </div>
+                    <i class="fas fa-clock fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Total Customers</h6>
+                        <h2 class="mb-0">{{ total_customers }}</h2>
+                    </div>
+                    <i class="fas fa-users fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Rentals -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Recent Rentals</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Vehicle</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rental in recent_rentals %}
+                    <tr>
+                        <td>{{ rental.user.get_full_name }}</td>
+                        <td>{{ rental.vehicle.name }}</td>
+                        <td>{{ rental.start_date|date:"M d, Y" }}</td>
+                        <td>{{ rental.end_date|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="badge bg-{{ rental.status|lower }}-subtle text-{{ rental.status|lower }}">
+                                {{ rental.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">No rentals found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

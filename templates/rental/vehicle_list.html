@@ -1,0 +1,652 @@
+{% extends 'rental/base.html' %}
+{% load static %}
+
+{% block title %}RENTKAR - Vehicle List{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --secondary-color: #64748b;
+        --background-light: #f8fafc;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+    }
+
+    .filter-section {
+        position: sticky;
+        top: 1rem;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+    }
+
+    .filter-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .filter-header h6 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .filter-body {
+        padding: 1.25rem;
+    }
+
+    .filter-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .filter-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 0.625rem;
+        font-size: 0.875rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        background-color: white;
+        transition: all 0.2s ease;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .filter-select:hover {
+        border-color: var(--primary-color);
+    }
+
+    .filter-apply-btn {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .filter-apply-btn:hover {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .active-filters {
+        background: var(--background-light);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+
+    .active-filters-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .active-filters-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .clear-filters {
+        font-size: 0.875rem;
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .clear-filters:hover {
+        text-decoration: underline;
+    }
+
+    .filter-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .filter-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .filter-tag .remove {
+        margin-left: 0.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .filter-tag .remove:hover {
+        color: var(--primary-color);
+    }
+
+    .vehicle-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .vehicle-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    .vehicle-image-container {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        background: var(--background-light);
+    }
+
+    .vehicle-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .vehicle-card:hover .vehicle-image-container img {
+        transform: scale(1.05);
+    }
+
+    .vehicle-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .vehicle-content {
+        padding: 1.25rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .vehicle-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+
+    .vehicle-description {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .vehicle-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: var(--background-light);
+        border-radius: 8px;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .detail-item i {
+        color: var(--primary-color);
+        font-size: 1rem;
+        opacity: 0.8;
+    }
+
+    .vehicle-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .price-tag {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        display: flex;
+        align-items: baseline;
+        gap: 0.25rem;
+    }
+
+    .price-tag .currency {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .price-tag .period {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        font-weight: normal;
+    }
+
+    .view-details-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--primary-color);
+        background: var(--background-light);
+        border: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+    }
+
+    .view-details-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    /* EV Card Styles */
+    .vehicle-card.ev {
+        border-color: rgba(0, 200, 83, 0.2);
+        background: linear-gradient(to bottom, #ffffff, #f8fff9);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .vehicle-card.ev::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(to right, #00c853, #64dd17);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .vehicle-card.ev:hover::before {
+        opacity: 1;
+    }
+
+    .vehicle-card.ev .vehicle-badge {
+        background: rgba(0, 200, 83, 0.1);
+        color: #00c853;
+        border-color: rgba(0, 200, 83, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .vehicle-card.ev .vehicle-badge::before {
+        content: '⚡';
+        font-size: 0.875rem;
+    }
+
+    .vehicle-card.ev .vehicle-title {
+        color: #00695c;
+    }
+
+    .vehicle-card.ev .vehicle-details {
+        background: rgba(0, 200, 83, 0.05);
+        border: 1px solid rgba(0, 200, 83, 0.1);
+    }
+
+    .vehicle-card.ev .detail-item i {
+        color: #00c853;
+    }
+
+    .vehicle-card.ev .price-tag {
+        color: #00c853;
+        font-weight: 700;
+    }
+
+    .vehicle-card.ev .view-details-btn {
+        background: rgba(0, 200, 83, 0.1);
+        color: #00c853;
+        border-color: rgba(0, 200, 83, 0.2);
+        font-weight: 500;
+    }
+
+    .vehicle-card.ev .view-details-btn:hover {
+        background: #00c853;
+        color: white;
+        border-color: #00c853;
+        transform: translateY(-1px);
+    }
+
+    .vehicle-card.ev:hover {
+        box-shadow: 0 8px 16px rgba(0, 200, 83, 0.1);
+    }
+
+    .vehicle-card.ev .vehicle-image-container::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40%;
+        background: linear-gradient(to top, rgba(0, 200, 83, 0.1), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .vehicle-card.ev:hover .vehicle-image-container::after {
+        opacity: 1;
+    }
+
+    .vehicle-count {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+    }
+
+    .form-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-select, .form-control {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary);
+    }
+
+    .form-select:focus, .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: none;
+    }
+
+    .filter-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        background: var(--background-light);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+
+    .page-link {
+        border: none;
+        color: var(--text-secondary);
+        padding: 0.5rem 1rem;
+    }
+
+    .page-link:hover {
+        background: var(--background-light);
+        color: var(--primary-color);
+    }
+
+    .page-item.active .page-link {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .filter-section {
+            margin-bottom: 20px;
+        }
+        
+        .vehicle-card {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Filter Sidebar -->
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" id="filter-form">
+                        <div class="mb-3">
+                            <label for="id_vehicle_type" class="form-label">Vehicle Type</label>
+                            {{ filter_form.vehicle_type }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_fuel_type" class="form-label">Fuel Type</label>
+                            {{ filter_form.fuel_type }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price Range</label>
+                            <div class="row g-2">
+                                <div class="col">
+                                    {{ filter_form.min_price }}
+                                </div>
+                                <div class="col">
+                                    {{ filter_form.max_price }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_sort_by" class="form-label">Sort By</label>
+                            {{ filter_form.sort_by }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        <a href="{% url 'vehicle_list' %}" class="btn btn-outline-secondary w-100 mt-2">Clear Filters</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle List -->
+        <div class="col-md-9">
+            <div class="row mb-4">
+                <div class="col">
+                    <h2 class="mb-0">Available Vehicles</h2>
+                </div>
+                <div class="col-auto">
+                    <span class="vehicle-count">
+                        <i class="fas fa-car me-2"></i>
+                        {{ vehicles.paginator.count }} vehicles found
+                    </span>
+                </div>
+            </div>
+
+            <!-- Active Filters -->
+            {% if request.GET %}
+            <div class="active-filters mb-4">
+                <div class="active-filters-header">
+                    <span class="active-filters-title">Active Filters:</span>
+                    <a href="{% url 'vehicle_list' %}" class="clear-filters">Clear All</a>
+                </div>
+                <div class="filter-tags">
+                    {% if filter_form.cleaned_data.vehicle_type %}
+                    <span class="filter-tag">
+                        Type: {{ filter_form.cleaned_data.vehicle_type }}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'vehicle_type' %}{{ key }}={{ value }}&{% endif %}{% endfor %}" class="remove">&times;</a>
+                    </span>
+                    {% endif %}
+                    {% if filter_form.cleaned_data.fuel_type %}
+                    <span class="filter-tag">
+                        Fuel: {{ filter_form.cleaned_data.fuel_type }}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'fuel_type' %}{{ key }}={{ value }}&{% endif %}{% endfor %}" class="remove">&times;</a>
+                    </span>
+                    {% endif %}
+                    {% if filter_form.cleaned_data.min_price %}
+                    <span class="filter-tag">
+                        Min Price: ₹{{ filter_form.cleaned_data.min_price }}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'min_price' %}{{ key }}={{ value }}&{% endif %}{% endfor %}" class="remove">&times;</a>
+                    </span>
+                    {% endif %}
+                    {% if filter_form.cleaned_data.max_price %}
+                    <span class="filter-tag">
+                        Max Price: ₹{{ filter_form.cleaned_data.max_price }}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'max_price' %}{{ key }}={{ value }}&{% endif %}{% endfor %}" class="remove">&times;</a>
+                    </span>
+                    {% endif %}
+                    {% if filter_form.cleaned_data.sort_by %}
+                    <span class="filter-tag">
+                        Sort: {{ filter_form.cleaned_data.sort_by }}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'sort_by' %}{{ key }}={{ value }}&{% endif %}{% endfor %}" class="remove">&times;</a>
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if vehicles %}
+                <div class="row">
+                    {% for vehicle in vehicles %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="vehicle-card {% if vehicle.fuel_type == 'EV' %}ev{% endif %}">
+                            <div class="vehicle-image-container">
+                                {% if vehicle.image %}
+                                <img src="{{ vehicle.image.url }}" alt="{{ vehicle.name }}">
+                                {% else %}
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="fas fa-car fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <span class="vehicle-badge">
+                                    {{ vehicle.get_vehicle_type_display }}
+                                </span>
+                            </div>
+                            <div class="vehicle-content">
+                                <h3 class="vehicle-title">{{ vehicle.name }}</h3>
+                                <p class="vehicle-description">{{ vehicle.description|truncatewords:20 }}</p>
+                                <div class="vehicle-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-gas-pump"></i>
+                                        {{ vehicle.get_fuel_type_display }}
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        {{ vehicle.registration_number }}
+                                    </div>
+                                </div>
+                                <div class="vehicle-footer">
+                                    <div class="price-tag">
+                                        <span class="currency">₹</span>{{ vehicle.daily_rate }}<span class="period">/day</span>
+                                    </div>
+                                    <a href="{% url 'vehicle_detail' vehicle.vehicle_id %}" class="view-details-btn">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if vehicles.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if vehicles.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ vehicles.previous_page_number }}{% if filter_params %}&{{ filter_params }}{% endif %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in vehicles.paginator.page_range %}
+                            {% if vehicles.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > vehicles.number|add:'-3' and num < vehicles.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if filter_params %}&{{ filter_params }}{% endif %}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if vehicles.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ vehicles.next_page_number }}{% if filter_params %}&{{ filter_params }}{% endif %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <h3 class="text-muted">No vehicles found matching your criteria</h3>
+                    <p class="text-muted">Try adjusting your filters or <a href="{% url 'vehicle_list' %}">clear all filters</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Handle filter form submission
+        $('#filter-form select, #filter-form input').change(function() {
+            $('#filter-form').submit();
+        });
+
+        // Initialize tooltips
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %} 
